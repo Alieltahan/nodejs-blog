@@ -1,0 +1,40 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "Blog Management Task",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Alieltahan/node-blog.git"
+  },
+  "keywords": [
+    "Blog",
+    "Management",
+    "-",
+    "NodeJS"
+  ],
+  "author": "Ali Eltahan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Alieltahan/node-blog/issues"
+  },
+  "homepage": "https://github.com/Alieltahan/node-blog#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "config": "^3.3.12",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "fawn": "^2.1.5",
+    "joi": "^17.13.3",
+    "joi-objectid": "^4.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.6",
+    "winston": "^3.17.0"
+  }
+}
