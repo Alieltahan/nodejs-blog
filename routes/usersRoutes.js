@@ -4,7 +4,7 @@ const router = express.Router();
 const { UserModel, validateUser } = require("../models/usersModel");
 const AppError = require('../utils/AppError');
 
-router.route('/')
+router.route('/signup')
 		.post( async (req, res) => {
 			const { error } = validateUser(req.body);
 			if (error) return res.status(400).send(new AppError(error.details[0].message, 400));
