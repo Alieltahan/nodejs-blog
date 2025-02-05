@@ -1,9 +1,15 @@
+import { ValidationResult } from "joi";
+import { Schema } from "mongoose";
+import { authenticatePayloadType } from "../Types/request";
+import { regexPass } from "../utils/constants";
+import { UserModelType } from "./types";
+
 const config = require("config");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const userSchema: Schema<UserModelType> = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true,
@@ -24,6 +30,10 @@ const userSchema = new mongoose.Schema({
 		minlength: 8,
 		maxlength: 1024
 	},
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	}
 });
 
 userSchema.methods.generateAuthToken = function() {
@@ -38,9 +48,9 @@ userSchema.methods.generateAuthToken = function() {
 	return token;
 };
 
-const User = mongoose.model("Users", userSchema);
+const UserModel: UserModelType = mongoose.model("Users", userSchema);
 
-function validateUser(user) {
+function validateUserSignUp(user: UserModelType): ValidationResult {
 	const schema = Joi.object({
 		name: Joi.string()
 				 .min(2)
@@ -56,7 +66,7 @@ function validateUser(user) {
 		password: Joi.string()
 					 .min(8)
 					 .max(255)
-					 .regex(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@#$%^&*()_+~`|}{[\]:;?><,./]+$/, `Password must contain at least one letter and one number`) // Allows only alphanumeric characters and special characters
+					 .regex(regexPass) // Allows only alphanumeric characters and special characters
 					 .label('Password')
 					 .required(),
 		confirmPassword: Joi.string()
@@ -68,5 +78,15 @@ function validateUser(user) {
 	return schema.validate(user);
 }
 
-exports.UserModel = User;
-exports.validateUser = validateUser;
+function validateUserLogin(req: authenticatePayloadType): ValidationResult {
+	const schema = Joi.object({
+		email: Joi.string().min(5).max(255).required().email(),
+		password: Joi.string().min(8).max(255).required(),
+	});
+
+	return schema.validate(req);
+}
+
+exports.UserModel = UserModel;
+exports.validateUserLogin = validateUserLogin;
+exports.validateUserSignUp = validateUserSignUp;

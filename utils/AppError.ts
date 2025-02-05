@@ -1,14 +1,24 @@
+import logger from '../services/logger';
+
 class AppError extends Error {
-	constructor(message, statusCode) {
+	statusCode: number;
+	status: string;
+	description: string;
+	isOperational: boolean;
+
+	constructor(message: string, statusCode: number) {
 		super(message);
 
 		this.statusCode = statusCode;
 		this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
-		this.error = message;
+		this.description = message;
 		this.isOperational = true; // A flag to know that error is handled during dev.
+
+		logger.log('info', message);
 
 		Error.captureStackTrace(this, this.constructor);
 	}
+
 }
 
-module.exports = AppError;
+export default AppError;
