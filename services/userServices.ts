@@ -1,9 +1,9 @@
 import { Response } from "express";
 import { SignUpPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
-import { httpStatusCode } from "../utils/constants";
 const { UserModel, validateUserSignUp } = require("../models/usersModel");
 const bcrypt = require("bcrypt");
+import { httpStatusCode } from "../utils/constants";
 
 export function registerUser() {
 	return async (req: SignUpPayloadType, res: Response): Promise<Response<any, Record<string, any>>> => {

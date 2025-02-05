@@ -66,7 +66,7 @@ function validateUserSignUp(user: UserModelType): ValidationResult {
 		password: Joi.string()
 					 .min(8)
 					 .max(255)
-					 .regex(regexPass) // Allows only alphanumeric characters and special characters
+					 .regex(regexPass, `Password must contain at least one letter and one number`) // Allows only alphanumeric characters and special characters
 					 .label('Password')
 					 .required(),
 		confirmPassword: Joi.string()

@@ -1,4 +1,4 @@
-export const regexPass = '/^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9!@#$%^&*()_+~`|}{[\\]:;?><,./]+$/, `Password must contain at least one letter and one number`';
+export const regexPass = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@#$%^&*()_+~`|}{[\]:;?><,./]+$/;
 
 export enum httpStatusCode {
 	CONTINUE = 100,
