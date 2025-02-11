@@ -8,9 +8,15 @@ import { HttpStatusCode } from "../utils/constants";
 const asyncHandler = require('express-async-handler');
 
 class BlogController {
-	getAllBlogs = asyncHandler(async (_req: blogPayloadType, res: Response) => {
+	getAllBlogs = asyncHandler(async (req: blogPayloadType, res: Response) => {
+		const category= req.query.category.toString().trim();
+		if (category && typeof category === 'string') {
+			const blogs = await BlogService.getBlogsByCategory(category);
+			return res.status(HttpStatusCode.OK).send(blogs);
+		} else {
 		const blogs = await BlogService.getAll();
 		return res.status(HttpStatusCode.OK).send(blogs);
+		}
 	})
 
 	postBlog = asyncHandler(async (req: blogPayloadType, res: Response) => {
