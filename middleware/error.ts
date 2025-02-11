@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { httpStatusCode } from "../utils/constants";
+import Logger from "../services/Logger";
+import { HttpStatusCode } from "../utils/constants";
 
-const winston = require('winston');
 const AppError = require('../utils/AppError');
 
 module.exports = function(err: { message: string; details: { message: string; }[]; }, _req: Request, res: Response){
-		winston.error(err.message, err);
-		res.status(httpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError(err.details[0].message, httpStatusCode.INTERNAL_SERVER_ERROR));
+		Logger.error(`server side error => ${err}`);
+		res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError(err.details[0].message, HttpStatusCode.INTERNAL_SERVER_ERROR));
 }

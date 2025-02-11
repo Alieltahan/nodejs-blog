@@ -1,4 +1,4 @@
-import logger from '../services/logger';
+import Logger from '../services/Logger';
 
 class AppError extends Error {
 	statusCode: number;
@@ -14,7 +14,7 @@ class AppError extends Error {
 		this.description = message;
 		this.isOperational = true; // A flag to know that error is handled during dev.
 
-		logger.log('info', message);
+		Logger.log('info', message);
 
 		Error.captureStackTrace(this, this.constructor);
 	}

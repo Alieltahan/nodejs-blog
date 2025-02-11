@@ -9,6 +9,7 @@ export interface UserModelType	{
 	email: string,
 	password: string,
 	confirmPassword: string,
-	createdAt: Date,
-	generateAuthToken: () => string,
+	createdAt?: Date,
+	generateAuthToken?: () => string,
+	save?: () => Promise<void>
 }
