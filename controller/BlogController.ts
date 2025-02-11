@@ -36,6 +36,32 @@ class BlogController {
 
 		return res.status(HttpStatusCode.CREATED).send(blog);
 	})
+
+	updateBlog = asyncHandler(async (req: blogPayloadType, res: Response) => {
+		const blogId = req.params.id;
+		const blog = await BlogService.getBlogById(blogId);
+		if (!blog) return res.status(HttpStatusCode.NOT_FOUND).send(new AppError("Blog not found", HttpStatusCode.NOT_FOUND));
+
+		if (blog.user._id !== req.body.user._id) return res.status(HttpStatusCode.FORBIDDEN).send(new AppError("You are not authorized to update this blog", HttpStatusCode.FORBIDDEN));
+
+		const { error } = validateBlog({
+			title: req.body.title,
+			category: req.body.category,
+			content: req.body.content,
+		});
+		if (error) return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError(error.details[0].message, HttpStatusCode.BAD_REQUEST));
+
+		await blog.set({
+			title: req.body.title,
+			category: req.body.category,
+			content: req.body.content,
+			updatedAt: new Date(),
+		})
+
+		await blog.save();
+
+		return res.status(HttpStatusCode.OK).send({status: "success", description: "Blog updated successfully", statusCode: HttpStatusCode.OK});
+	})
 }
 
 export default new BlogController();

@@ -19,5 +19,8 @@ export interface BlogPayload {
 	title: string;
 	content: string;
 	category: string;
-	user: AuthenticatePayload
+	updatedAt?: Date;
+	user?: AuthenticatePayload
+	save?: () => Promise<void>
+	set?: (blog: BlogPayload) => Promise<void>
 }
