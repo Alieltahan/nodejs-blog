@@ -6,12 +6,12 @@ const Joi = require("joi");
 const mongoose = require("mongoose");
 
 
-const userSchema: Schema<BlogModelType> = new mongoose.Schema({
+const blogSchema: Schema<BlogModelType> = new mongoose.Schema({
 	title: {
 		type: String,
-		required: true,
 		minlength: 2,
-		maxlength: 70
+		maxlength: 70,
+		required: true,
 	},
 	content: {
 		type: String,
@@ -20,8 +20,6 @@ const userSchema: Schema<BlogModelType> = new mongoose.Schema({
 	},
 	category: {
 		type: String,
-		minLength: 3,
-		required: true,
 	},
 	createdAt: {
 		type: Date,
@@ -30,10 +28,15 @@ const userSchema: Schema<BlogModelType> = new mongoose.Schema({
 	updatedAt: {
 		type: Date,
 		default: Date.now,
+	},
+	user: {
+		_id: String,
+		email: String,
+		name: String,
 	}
 });
 
-const Blog = mongoose.model("Blogs", userSchema);
+const BlogModel = mongoose.model("Blogs", blogSchema);
 
 function validateBlog(blog: BlogModelType): ValidationResult {
 	const schema = Joi.object({
@@ -50,12 +53,18 @@ function validateBlog(blog: BlogModelType): ValidationResult {
 		category: Joi.string()
 					 .min(3)
 					 .trim()
-					 .label('Category')
-					 .required(),
+					 .label('Category'),
+		user: {
+			_id: Joi.objectId().required().label('User is not correct'),
+			email: Joi.string().email().label('User Email is required'),
+			name: Joi.string().label('User name is missing')
+		}
 	});
 
 	return schema.validate(blog);
 }
 
-exports.blogModel = Blog;
-exports.validateBlog = validateBlog;
+export {
+	validateBlog,
+	BlogModel,
+}

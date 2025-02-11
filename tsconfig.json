@@ -3,14 +3,18 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist",
+    "alwaysStrict": false,
+    "strictFunctionTypes": false,
+    "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*", "types/*"]
     }
   },
-  "include": ["/**/*"]
+  "include": ["/**/*"],
+//  "include": ["./src"],
+  "exclude": ["**/*/*.test.*", "**/*.spec.*"]
 }

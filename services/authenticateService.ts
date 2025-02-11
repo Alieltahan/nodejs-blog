@@ -1,14 +1,14 @@
 import { Response } from "express";
 import { UserModelType } from "../models/types";
 const { UserModel, validateUserLogin } = require("../models/usersModel");
-import { SignUpPayloadType } from "../Types/request";
+import { signUpPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
+import { HttpStatusCode } from "../utils/constants";
 const bcrypt = require('bcrypt');
-const HttpStatusCode = require('http-status-codes');
 
 
 export function authenticateUserHandler() {
-	return async (req: SignUpPayloadType, res: Response): Promise<Response<any, Record<string, any>>> => {
+	return async (req: signUpPayloadType, res: Response): Promise<Response<any, Record<string, any>>> => {
 		try {
 			const {error} = validateUserLogin(req.body);
 			if (error) return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError(error.details[0].message, HttpStatusCode.BAD_REQUEST));
