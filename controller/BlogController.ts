@@ -16,7 +16,17 @@ class BlogController {
 	postBlog = asyncHandler(async (req: blogPayloadType, res: Response) => {
 		const { error } = validateBlog(req.body);
 		if (error) return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError(error.details[0].message, HttpStatusCode.BAD_REQUEST));
-		let blog = await BlogService.createBlog({...req.body, owner: { _id: req.body.user._id, email: req.body.user.email, name: req.body.user.name }});
+		const newBlog = {
+			title: req.body.title,
+			category: req.body.category,
+			content: req.body.content,
+			user: {
+				_id: req.body.user._id,
+				email: req.body.user.email,
+				name: req.body.user.name
+			}
+		}
+		let blog = await BlogService.createBlog(newBlog);
 
 		return res.status(HttpStatusCode.CREATED).send(blog);
 	})
