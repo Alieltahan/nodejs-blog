@@ -23,4 +23,5 @@ export interface BlogPayload {
 	user?: AuthenticatePayload
 	save?: () => Promise<void>
 	set?: (blog: BlogPayload) => Promise<void>
+	remove?: () => Promise<void>;
 }

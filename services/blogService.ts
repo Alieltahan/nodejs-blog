@@ -41,6 +41,16 @@ class BlogService {
 			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
+
+	async deleteBlogById (id: string): Promise<BlogPayload| void> {
+		try {
+			return BlogModel.findByIdAndDelete({_id: id}).select('-__v');
+		}
+		catch (err) {
+			Logger.error(`BlogService() => deleteBlogById() error : ${err}`);
+			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
+		}
+	}
 }
 
 export default new BlogService();

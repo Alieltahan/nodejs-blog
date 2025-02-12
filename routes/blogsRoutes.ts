@@ -14,5 +14,7 @@ router.route('/')
 router.route('/:id')
 	// @ts-ignore
 	.put([authorize, validateObjectId], BlogController.updateBlog)
+	// @ts-ignore
+	.delete([authorize, validateObjectId], BlogController.deleteBlog)
 
 module.exports = router;
