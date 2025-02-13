@@ -1,7 +1,5 @@
 import { Response } from "express";
 import asyncHandler from "express-async-handler";
-import { AuthenticatePayload } from "../Types/payload";
-import { UserModelType } from "../models/types";
 import { signUpPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
 import { HttpStatusCode } from "../utils/constants";
@@ -12,35 +10,37 @@ import UserService from "../services/userServices";
 class UserController {
 	// @ts-ignore
 	registerUser = asyncHandler(async (req: signUpPayloadType, res: Response) => {
-		const {error} = validateUserSignUp(req.body);
+		try {
+
+		const newUser = {
+			name: req.body.name,
+			email: req.body.email,
+			password: req.body.password,
+			confirmPassword: req.body.confirmPassword,
+		}
+		const {error} = validateUserSignUp(newUser);
 		if (error) return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError(error.details[0].message, HttpStatusCode.BAD_REQUEST));
 
-		const {name, email, password} = req.body;
-		let user: AuthenticatePayload | UserModelType = await UserService.getUserByEmail(email);
+		const {token, code, user} = await UserService.createUser(newUser);
 
-		if (user) return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError("User already exists!", HttpStatusCode.BAD_REQUEST));
-
-		user = await UserService.createUser(req.body);
-
-		const salt: string = await bcrypt.genSalt(10);
-		user.password = await bcrypt.hash(password, salt);
-		if ("save" in user) {
-			await user.save();
+		if(code === HttpStatusCode.BAD_REQUEST) {
+			return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError("User already exists!", HttpStatusCode.BAD_REQUEST));
 		}
 
-		let token = "";
-		if ("generateAuthToken" in user) {
-			token = user.generateAuthToken();
-		}
 		return res
 			.header("x-auth-token", token)
 			.header("access-control-expose-headers", "x-auth-token")
 			.send({
-				"_id": "_id" in user ? user?._id : "",
-				"name": name,
-				"email": email,
+				"_id": user?._id,
+				"name": user?.name,
+				"email": user?.email,
 			});
-		});
+		}
+		catch (error) {
+			return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError(error.message, HttpStatusCode.INTERNAL_SERVER_ERROR));
+		}
+	});
+
 }
 
 export default new UserController();

@@ -2,6 +2,8 @@ export interface AuthenticatePayload {
 	_id?: string;
 	email: string;
 	password: string;
+	name: string;
+	confirmpassword?: string;
 }
 
 export interface SignUpPayload {
@@ -19,5 +21,9 @@ export interface BlogPayload {
 	title: string;
 	content: string;
 	category: string;
-	user: AuthenticatePayload
+	updatedAt?: Date;
+	user?: AuthenticatePayload
+	save?: () => Promise<void>
+	set?: (blog: BlogPayload) => Promise<void>
+	remove?: () => Promise<void>;
 }
