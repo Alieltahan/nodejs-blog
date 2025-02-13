@@ -2,6 +2,8 @@ export interface AuthenticatePayload {
 	_id?: string;
 	email: string;
 	password: string;
+	name: string;
+	confirmpassword?: string;
 }
 
 export interface SignUpPayload {
