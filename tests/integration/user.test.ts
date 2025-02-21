@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { HttpStatusCode } from '../../utils/constants';
-import exp = require("node:constants");
 const { UserModel } = require('../../models/usersModel');
 
 describe('Register User - /api/users/signup', () => {

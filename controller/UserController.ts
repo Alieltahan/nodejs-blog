@@ -4,7 +4,6 @@ import { signUpPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
 import { HttpStatusCode } from "../utils/constants";
 const { validateUserSignUp } = require("../models/usersModel");
-const bcrypt = require("bcrypt");
 import UserService from "../services/userServices";
 
 class UserController {
