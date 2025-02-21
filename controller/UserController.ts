@@ -28,6 +28,7 @@ class UserController {
 		}
 
 		return res
+			.status(HttpStatusCode.CREATED)
 			.header("x-auth-token", token)
 			.header("access-control-expose-headers", "x-auth-token")
 			.send({

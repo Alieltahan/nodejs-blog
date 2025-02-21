@@ -20,7 +20,9 @@ export function authenticateUserHandler() {
 			if (!validPassword) return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError('Invalid email or password.', HttpStatusCode.BAD_REQUEST));
 
 			const token: string = user.generateAuthToken();
-			res.send(token);
+			res
+				.status(HttpStatusCode.OK)
+				.send(token);
 		}
 		catch (error) {
 			return res.send(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError(error.details[0].message, HttpStatusCode.INTERNAL_SERVER_ERROR));

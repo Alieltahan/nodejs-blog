@@ -48,7 +48,7 @@ userSchema.methods.generateAuthToken = function() {
 	return token;
 };
 
-const UserModel: UserModelType = mongoose.model("Users", userSchema);
+const UserModel: Schema<UserModelType> = mongoose.model("Users", userSchema);
 
 function validateUserSignUp(user: UserModelType): ValidationResult {
 	const schema = Joi.object({
