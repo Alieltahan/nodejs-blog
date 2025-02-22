@@ -1,40 +1,92 @@
-import { BlogPayload } from "../Types/payload";
 import { BlogModel } from "../models/blogsModel";
 import { BlogModelType } from "../models/types";
+import { AuthenticatePayload, BlogPayload } from "../Types/payload";
 import AppError from "../utils/AppError";
 import { HttpStatusCode } from "../utils/constants";
 import Logger from "./Logger";
 
+interface BlogServiceTypes {
+	code: HttpStatusCode,
+	blogs?: BlogModelType[],
+	blog?: BlogModelType,
+	save?: () => Promise<void>
+	set?: (blog: BlogPayload) => Promise<void>
+	remove?: () => Promise<void>;
+	user?: AuthenticatePayload;
+}
+
 class BlogService {
-	async getAll (): Promise<BlogModelType[]| void> {
+	async getAll (): Promise<BlogServiceTypes> {
 		try {
-			return BlogModel.find().select('-__v');
+			const blogs = await BlogModel.find().select('-__v');
+			if (blogs.length === 0) {
+				return {
+					code: HttpStatusCode.NOT_FOUND,
+				}
+				}
+				return {
+					code: HttpStatusCode.OK,
+					blogs
+			}
 		} catch(err) {
 			Logger.error(`BlogService() => getAll() error : ${err}`);
 			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
 
-	async createBlog (blog: BlogModelType): Promise<BlogModelType| void> {
+	async createBlog (blog: BlogModelType): Promise<BlogServiceTypes> {
 		try {
-			return await new BlogModel(blog).save();
+			const newBlog = {
+				title: blog.title,
+				content: blog.content,
+				category: blog.category,
+				user: {
+					name: blog.user.name,
+					_id: blog.user._id,
+					email: blog.user.email
+				}
+			}
+			await new BlogModel(newBlog).save();
+
+			return {
+				code: HttpStatusCode.CREATED
+			}
 		} catch(err) {
 			Logger.error(`BlogService() => createBlog() error : ${err}`);
 			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
 
-	async getBlogsByCategory (category: string): Promise<BlogModelType[]| void> {
+	async getBlogsByCategory (category: string): Promise<BlogServiceTypes> {
 		try {
-			return BlogModel.find({category: { $regex : category, $options: 'i' }}).select('-__v');
+			const blogs = await BlogModel.find({category: { $regex : category, $options: 'i' }}).select('-__v');
+			if (blogs.length === 0) {
+				return {
+					code: HttpStatusCode.NOT_FOUND
+				}
+			}
+
+			return {
+				code: HttpStatusCode.OK,
+				blogs
+			}
 		} catch(err) {
 			Logger.error(`BlogService() => getBlogsByCategory() error : ${err}`);
 			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
-	async getBlogById (id: string): Promise<BlogPayload| void> {
+	async getBlogById(id: string): Promise<BlogServiceTypes> {
 		try {
-			return BlogModel.findById(id).select('-__v');
+			const blog = await BlogModel.findById(id).select('-__v');
+			if (!blog) {
+				return {
+					code: HttpStatusCode.NOT_FOUND
+				}
+			}
+			return {
+				code: HttpStatusCode.OK,
+				blog
+			}
 		}
 		catch (err) {
 			Logger.error(`BlogService() => getBlogById() error : ${err}`);
@@ -44,7 +96,7 @@ class BlogService {
 
 	async deleteBlogById (id: string): Promise<BlogPayload| void> {
 		try {
-			return BlogModel.findByIdAndDelete({_id: id}).select('-__v');
+			return BlogModel.findByIdAndDelete(id);
 		}
 		catch (err) {
 			Logger.error(`BlogService() => deleteBlogById() error : ${err}`);
