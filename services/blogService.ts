@@ -1,4 +1,3 @@
-import QueryString from "qs";
 import { BlogModel } from "../models/blogsModel";
 import { BlogModelType } from "../models/types";
 import { AuthenticatePayload, BlogPayload } from "../Types/payload";

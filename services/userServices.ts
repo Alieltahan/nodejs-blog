@@ -1,6 +1,4 @@
-import { UserModelType } from "../models/types";
 import { AuthenticatePayload, SignUpPayload } from "../Types/payload";
-import AppError from "../utils/AppError";
 import { HttpStatusCode } from "../utils/constants";
 const { UserModel } = require("../models/usersModel");
 const bcrypt = require("bcrypt");

@@ -1,5 +1,3 @@
-import { HttpStatusCode } from "../utils/constants";
-
 export interface AuthenticatePayload {
 	_id?: string;
 	email: string;
