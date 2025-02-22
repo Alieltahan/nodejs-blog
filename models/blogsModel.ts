@@ -55,7 +55,7 @@ function validateBlog(blog: BlogModelType): ValidationResult {
 					 .trim()
 					 .label('Category'),
 		user: {
-			_id: Joi.objectId().required().label('User is not correct'),
+			_id: Joi.string().required().label('User is not correct'),
 			email: Joi.string().email().label('User Email is required'),
 			name: Joi.string().label('User name is missing')
 		}

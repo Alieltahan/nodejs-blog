@@ -36,9 +36,16 @@ class UserService {
 					await newUser.save();
 				}
 				const token = newUser.generateAuthToken();
+
+				const mappedUser = {
+					_id: newUser._id,
+					name: newUser.name,
+					email: newUser.email,
+				}
+
 				return {
 					code : HttpStatusCode.CREATED,
-					user: newUser,
+					user: mappedUser,
 					token
 				}
 			}

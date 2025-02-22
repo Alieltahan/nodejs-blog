@@ -1,4 +1,5 @@
 import { NextFunction, Response } from "express";
+import Logger from "../services/Logger";
 import { userObjectPayload } from "../Types/request";
 import AppError from "../utils/AppError";
 import { HttpStatusCode } from "../utils/constants";
@@ -13,7 +14,13 @@ export function authorize (req: userObjectPayload, res: Response, next: NextFunc
 	if (!token) return res.status(HttpStatusCode.UNAUTHORIZED).send(new AppError("Access denied. No token provided.", HttpStatusCode.UNAUTHORIZED));
 
 	try {
+		// Ensure req.body is defined
+		if (!req.body) {
+			req.body = {};
+		}
+
 		const { _id, name, email } = jwt.verify(token, config.get("jwtPrivateKey"));
+
 		req.body.user = {
 			_id,
 			email,
@@ -21,6 +28,7 @@ export function authorize (req: userObjectPayload, res: Response, next: NextFunc
 		};
 		next();
 	} catch (ex) {
-		res.status(HttpStatusCode.BAD_REQUEST).send(new AppError("Invalid token.", HttpStatusCode.BAD_REQUEST));
+		Logger.error('Failed during Middleware Authorization', ex)
+		res.status(HttpStatusCode.BAD_REQUEST).send(new AppError("Authorization failed.", HttpStatusCode.BAD_REQUEST));
 	}
 }
