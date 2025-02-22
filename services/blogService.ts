@@ -59,7 +59,7 @@ class BlogService {
 
 	async getBlogsByCategory (category: string): Promise<BlogServiceTypes> {
 		try {
-			const blogs = BlogModel.find({category: { $regex : category, $options: 'i' }}).select('-__v');
+			const blogs = await BlogModel.find({category: { $regex : category, $options: 'i' }}).select('-__v');
 			if (blogs.length === 0) {
 				return {
 					code: HttpStatusCode.NOT_FOUND
