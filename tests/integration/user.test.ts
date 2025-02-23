@@ -109,8 +109,8 @@ describe('Login User - /api/users/auth', () => {
 	let server;
 	beforeEach(async () => server = require('../../index'))
 	afterEach(async () => {
-		await server.close();
 		await UserModel.deleteMany({});
+		await server.close();
 	});
 
 	let newUser: any;

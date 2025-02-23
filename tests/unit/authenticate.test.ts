@@ -12,7 +12,7 @@ describe('user.generateAuthToken', () => {
 		};
 		const user = await UserModel(payload);
 		const token = user?.generateAuthToken?.();
-		const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
+		const decoded = jwt.verify(token, config.get('JWT_PRIVATE_KEY'));
 		expect(decoded).toMatchObject(payload);
 	});
 
@@ -25,7 +25,7 @@ describe('user.generateAuthToken', () => {
 		};
 		const user = await UserModel(payload);
 		const token = user?.generateAuthToken?.();
-		const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
+		const decoded = jwt.verify(token, config.get('JWT_PRIVATE_KEY'));
 		expect(decoded).not.toMatchObject(payload);
 	});
 });

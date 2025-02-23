@@ -1,5 +1,5 @@
 {
-  "jwtPrivateKey": "unsecureKey",
+  "JWT_PRIVATE_KEY": "unsecureKey",
   "db": "mongodb://localhost/blog",
   "port": "3900",
   "requiresAuth": true

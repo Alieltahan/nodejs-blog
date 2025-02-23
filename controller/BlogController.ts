@@ -1,11 +1,12 @@
 import { Response } from "express";
 import { validateBlog } from "../models/blogsModel";
-import { BlogModelType } from "../models/types";
 import BlogService from "../services/blogService";
 import Logger from "../services/Logger";
 import { blogPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
+import { blogsMapper } from "../utils/blogsMapper";
 import { HttpStatusCode } from "../utils/constants";
+import { successResponseMapper } from "../utils/successResponseMapper";
 
 const asyncHandler = require('express-async-handler');
 
@@ -15,16 +16,21 @@ class BlogController {
 
 		const category= req.query.category?.toString?.().trim?.();
 		if (category && typeof category === 'string') {
-			const blogs = await BlogService.getBlogsByCategory(category);
-			return res.status(HttpStatusCode.OK).send(blogs);
+			const { blogs, code } = await BlogService.getBlogsByCategory(category);
+
+			if (code === HttpStatusCode.NOT_FOUND)
+				res.status(HttpStatusCode.NOT_FOUND).send(new AppError('Not blogs found with these search criteria', HttpStatusCode.NOT_FOUND));
+
+			const mappedFilteredBlogs = blogsMapper(blogs);
+
+			return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedFilteredBlogs));
 		}
 
-		const { blogs, code} = await BlogService.getAll();
-		if(code === HttpStatusCode.NOT_FOUND) return res.status(HttpStatusCode.NOT_FOUND).send(new AppError("No blogs found", HttpStatusCode.NOT_FOUND));
+		const { blogs } = await BlogService.getAll();
 
-		const mappedBlogs = this.getMappedBlogs(blogs);
+		const mappedBlogs = blogsMapper(blogs);
 
-		return res.status(HttpStatusCode.OK).send(mappedBlogs);
+		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK,mappedBlogs));
 		} catch (err) {
 			Logger.error('Failed during Controller getAllBlogs', err);
 			res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError('Something Went wrong', HttpStatusCode.INTERNAL_SERVER_ERROR));
@@ -46,7 +52,7 @@ class BlogController {
 		}
 		let blog = await BlogService.createBlog(newBlog);
 
-		return res.status(HttpStatusCode.CREATED).send(blog);
+		return res.status(HttpStatusCode.CREATED).send(successResponseMapper(HttpStatusCode.CREATED, blog));
 	})
 
 	updateBlog = asyncHandler(async (req: blogPayloadType, res: Response) => {
@@ -57,25 +63,21 @@ class BlogController {
 
 		if (code === HttpStatusCode.NOT_FOUND) return res.status(HttpStatusCode.NOT_FOUND).send(new AppError("Blog not found", HttpStatusCode.NOT_FOUND));
 
-		if (blog?.user?._id !== req?.body?.user?._id) return res.status(HttpStatusCode.FORBIDDEN).send(new AppError("You are not authorized to update this blog", HttpStatusCode.FORBIDDEN));
+		if (blog?.user?._id !== req?.body?.user?._id) return res.status(HttpStatusCode.FORBIDDEN).send(new AppError("You are not authorized to edit this blog", HttpStatusCode.FORBIDDEN));
 
-		const { error } = validateBlog({
+		const updatedBlog = {
 			title: req.body.title,
 			category: req.body.category,
 			content: req.body.content,
-		});
+		}
+
+		const { error } = validateBlog(updatedBlog);
 		if (error) return res.status(HttpStatusCode.BAD_REQUEST).send(new AppError(error.details[0].message, HttpStatusCode.BAD_REQUEST));
 
-		await blog.set({
-			title: req.body.title,
-			category: req.body.category,
-			content: req.body.content,
-			updatedAt: new Date(),
-		})
+		await BlogService.updateBlog(updatedBlog)
 
-		await blog.save();
+		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.CREATED, updatedBlog));
 
-		return res.status(HttpStatusCode.OK).send({status: "success", description: "Blog updated successfully", statusCode: HttpStatusCode.OK});
 		}
 		catch (err) {
 			res.status(HttpStatusCode.BAD_REQUEST).send(new AppError('Bad Request, failed to update blog', HttpStatusCode.BAD_REQUEST))
@@ -94,7 +96,7 @@ class BlogController {
 
 		await BlogService.deleteBlogById(blogId);
 
-		res.status(HttpStatusCode.OK).send({status: "success", description: "Blog deleted successfully", statusCode: HttpStatusCode.OK});
+		res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.CREATED, {}));
 		}
 		catch (err) {
 			Logger.error('Service Failed during deleting Blog', err);
@@ -102,20 +104,6 @@ class BlogController {
 			res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError('Something went wrong', HttpStatusCode.INTERNAL_SERVER_ERROR))
 		}
 	})
-
-	private getMappedBlogs(blogs: BlogModelType[]) {
-		return blogs?.map(blog => ({
-			title: blog.title,
-			category: blog.category,
-			content: blog.content,
-			createdAt: blog.createdAt,
-			updatedAt: blog.updatedAt,
-			user: {
-				name: blog.user.name,
-				_id: blog.user._id
-			}
-		}));
-	}
 }
 
 export default new BlogController();

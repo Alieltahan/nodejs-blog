@@ -19,18 +19,14 @@ class BlogService {
 	async getAll (): Promise<BlogServiceTypes> {
 		try {
 			const blogs = await BlogModel.find().select('-__v');
-			if (blogs.length === 0) {
-				return {
-					code: HttpStatusCode.NOT_FOUND,
-				}
-				}
-				return {
-					code: HttpStatusCode.OK,
-					blogs
+
+			return {
+				code: HttpStatusCode.OK,
+				blogs
 			}
 		} catch(err) {
 			Logger.error(`BlogService() => getAll() error : ${err}`);
-			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
+			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
 
@@ -53,7 +49,7 @@ class BlogService {
 			}
 		} catch(err) {
 			Logger.error(`BlogService() => createBlog() error : ${err}`);
-			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
+			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
 
@@ -72,9 +68,10 @@ class BlogService {
 			}
 		} catch(err) {
 			Logger.error(`BlogService() => getBlogsByCategory() error : ${err}`);
-			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
+			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
+
 	async getBlogById(id: string): Promise<BlogServiceTypes> {
 		try {
 			const blog = await BlogModel.findById(id).select('-__v');
@@ -90,7 +87,21 @@ class BlogService {
 		}
 		catch (err) {
 			Logger.error(`BlogService() => getBlogById() error : ${err}`);
-			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
+			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)
+		}
+	}
+
+	async updateBlog(updatedBlog: BlogModelType): Promise<BlogServiceTypes> {
+		try {
+
+			await BlogModel.updateOne(updatedBlog)
+
+			return {
+				code: HttpStatusCode.OK
+			}
+		} catch (err) {
+			Logger.error(`BlogService() => updateBlog() error : ${err}`);
+			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
 
@@ -100,7 +111,7 @@ class BlogService {
 		}
 		catch (err) {
 			Logger.error(`BlogService() => deleteBlogById() error : ${err}`);
-			new AppError(err.message, HttpStatusCode.INTERNAL_SERVER_ERROR)
+			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)
 		}
 	}
 }

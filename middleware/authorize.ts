@@ -19,7 +19,7 @@ export function authorize (req: userObjectPayload, res: Response, next: NextFunc
 			req.body = {};
 		}
 
-		const { _id, name, email } = jwt.verify(token, config.get("jwtPrivateKey"));
+		const { _id, name, email } = jwt.verify(token, config.get("JWT_PRIVATE_KEY"));
 
 		req.body.user = {
 			_id,

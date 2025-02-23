@@ -4,6 +4,7 @@ export interface AuthenticatePayload {
 	password?: string;
 	name: string;
 	confirmPassword?: string;
+	generateAuthToken?: () => string;
 }
 
 export interface SignUpPayload {

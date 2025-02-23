@@ -47,11 +47,13 @@ function validateBlog(blog: BlogModelType): ValidationResult {
 					.required(),
 		content: Joi.string()
 					.min(5)
+					.max(500)
 					.trim()
 					.required()
 					.label('Content'),
 		category: Joi.string()
 					 .min(3)
+					 .max(20)
 					 .trim()
 					 .label('Category'),
 		user: {
