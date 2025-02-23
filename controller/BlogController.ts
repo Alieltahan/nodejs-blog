@@ -6,6 +6,7 @@ import { blogPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
 import { blogsMapper } from "../utils/blogsMapper";
 import { HttpStatusCode } from "../utils/constants";
+import { successResponseMapper } from "../utils/successResponseMapper";
 
 const asyncHandler = require('express-async-handler');
 
@@ -22,7 +23,7 @@ class BlogController {
 
 			const mappedFilteredBlogs = blogsMapper(blogs);
 
-			return res.status(HttpStatusCode.OK).send(mappedFilteredBlogs);
+			return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedFilteredBlogs));
 		}
 
 		const { blogs } = await BlogService.getAll();
@@ -51,7 +52,7 @@ class BlogController {
 		}
 		let blog = await BlogService.createBlog(newBlog);
 
-		return res.status(HttpStatusCode.CREATED).send(blog);
+		return res.status(HttpStatusCode.CREATED).send(successResponseMapper(HttpStatusCode.CREATED, blog));
 	})
 
 	updateBlog = asyncHandler(async (req: blogPayloadType, res: Response) => {
@@ -75,7 +76,7 @@ class BlogController {
 
 		await BlogService.updateBlog(updatedBlog)
 
-		return res.status(HttpStatusCode.OK).send({status: "success", description: "Blog updated successfully", statusCode: HttpStatusCode.OK});
+		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.CREATED, updatedBlog));
 
 		}
 		catch (err) {
@@ -95,7 +96,7 @@ class BlogController {
 
 		await BlogService.deleteBlogById(blogId);
 
-		res.status(HttpStatusCode.OK).send({status: "success", description: "Blog deleted successfully", statusCode: HttpStatusCode.OK});
+		res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.CREATED, {}));
 		}
 		catch (err) {
 			Logger.error('Service Failed during deleting Blog', err);

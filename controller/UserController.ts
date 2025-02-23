@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 
 const { validateUserSignUp } = require("../models/usersModel");
 import UserService from "../services/userServices";
+import { successResponseMapper } from "../utils/successResponseMapper";
 
 class UserController {
 	// @ts-ignore
@@ -34,11 +35,11 @@ class UserController {
 			.status(HttpStatusCode.CREATED)
 			.header("x-auth-token", token)
 			.header("access-control-expose-headers", "x-auth-token")
-			.send({
+			.send(successResponseMapper(HttpStatusCode.CREATED,{
 				"_id": user?._id,
 				"name": user?.name,
 				"email": user?.email,
-			});
+			}));
 		}
 		catch (error) {
 			return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError(error.message, HttpStatusCode.INTERNAL_SERVER_ERROR));
@@ -61,7 +62,7 @@ class UserController {
 			const token: string = user.generateAuthToken();
 			res
 				.status(HttpStatusCode.OK)
-				.send(token);
+				.send(successResponseMapper(HttpStatusCode.OK, {token}));
 		}
 		catch (error) {
 			return res.send(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError(error.details[0].message, HttpStatusCode.INTERNAL_SERVER_ERROR));
