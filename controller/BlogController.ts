@@ -1,6 +1,5 @@
 import { Response } from "express";
 import { validateBlog } from "../models/blogsModel";
-import { BlogModelType } from "../models/types";
 import BlogService from "../services/blogService";
 import Logger from "../services/Logger";
 import { blogPayloadType } from "../Types/request";
