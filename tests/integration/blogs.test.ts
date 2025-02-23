@@ -8,8 +8,8 @@ describe('Create Blog POST /api/blogs', () => {
 	let server;
 	beforeEach( async () => server = require('../../index'))
 	afterEach(async () => {
-		await server.close();
 		await BlogModel.deleteMany({});
+		await server.close();
 	});
 
 	let token: string;

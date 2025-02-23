@@ -1,6 +1,5 @@
 node_modules/
 .idea/
-.env
 combined.log
 error.log
 exceptions.log

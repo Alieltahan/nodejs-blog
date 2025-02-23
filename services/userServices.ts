@@ -3,9 +3,23 @@ import { HttpStatusCode } from "../utils/constants";
 const { UserModel } = require("../models/usersModel");
 const bcrypt = require("bcrypt");
 
+interface GetUserByEmailReturnType {
+	code: HttpStatusCode,
+	user?: AuthenticatePayload
+}
+
 class UserService {
-	async getUserByEmail(email: string): Promise<AuthenticatePayload> {
-		return UserModel.findOne({email});
+	async getUserByEmail(email: string): Promise<GetUserByEmailReturnType> {
+		const user = await UserModel.findOne({email});
+		if (!user)
+			return {
+				code: HttpStatusCode.NOT_FOUND
+			}
+
+		return {
+			code: HttpStatusCode.OK,
+			user
+		}
 	}
 
 	async createUser(user: SignUpPayload): Promise<{
@@ -14,7 +28,8 @@ class UserService {
 		user: AuthenticatePayload
 	}> {
 			const { name, email, password } = user;
-			const userExist = await this.getUserByEmail(email);
+
+			const {user: userExist } = await this.getUserByEmail(email);
 			if (userExist) {
 				return {
 					token: "",
