@@ -30,7 +30,7 @@ class BlogController {
 
 		const mappedBlogs = blogsMapper(blogs);
 
-		return res.status(HttpStatusCode.OK).send(mappedBlogs);
+		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK,mappedBlogs));
 		} catch (err) {
 			Logger.error('Failed during Controller getAllBlogs', err);
 			res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError('Something Went wrong', HttpStatusCode.INTERNAL_SERVER_ERROR));
