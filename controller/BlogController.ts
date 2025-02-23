@@ -15,12 +15,14 @@ class BlogController {
 
 		const category= req.query.category?.toString?.().trim?.();
 		if (category && typeof category === 'string') {
-			const blogs = await BlogService.getBlogsByCategory(category);
+			const { blogs, code } = await BlogService.getBlogsByCategory(category);
 
-			if (blogs.code === HttpStatusCode.NOT_FOUND)
+			if (code === HttpStatusCode.NOT_FOUND)
 				res.status(HttpStatusCode.NOT_FOUND).send(new AppError('Not blogs found with these search criteria', HttpStatusCode.NOT_FOUND));
 
-			return res.status(HttpStatusCode.OK).send(blogs);
+			const mappedFilteredBlogs = blogsMapper(blogs);
+
+			return res.status(HttpStatusCode.OK).send(mappedFilteredBlogs);
 		}
 
 		const { blogs } = await BlogService.getAll();
