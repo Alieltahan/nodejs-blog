@@ -1,0 +1,374 @@
+openapi: 3.0.0
+info:
+  title: Blog API Management
+  version: 1.0.0
+tags:
+  - name: Blogs
+    description: The Blogs managing API
+components:
+  schemas:
+    UserInBlog:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The unique identifier for the user
+        name:
+          type: string
+          description: The name of the user
+        email:
+          type: string
+          description: The email address of the user
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        _id:
+          type: string
+          description: The unique identifier for the user (Auto generated)
+        name:
+          type: string
+          description: The name of the user
+        email:
+          type: string
+          description: The email address of the user
+        password:
+          type: string
+          description: The password of the user
+        confirmPassword:
+          type: string
+          description: Must match the password.
+    Blog:
+      type: object
+      required:
+        - title
+        - content
+        - category
+      properties:
+        id:
+          type: string
+          description: The auto-generated id of the blog
+        title:
+          type: string
+          description: The title of your blog
+        content:
+          type: string
+          description: The blog explanation
+        category:
+          type: string
+          description: The blog's category
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last date of updating the blog
+        createdAt:
+          type: string
+          format: date-time
+          description: The date the blog was added
+        user:
+          $ref: '#/components/schemas/UserInBlog'
+          description: The user object associated with the blog
+  securitySchemes:
+    bearerAuth:
+          type: http
+          scheme: bearer
+          bearerFormat: JWT
+paths:
+  /api/users/signup:
+    post:
+      summary: Sign up a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Ali"
+                email:
+                  type: string
+                  example: "Ali@domain.com"
+                password:
+                  type: string
+                  example: "1234456a79"
+                confirmPassword:
+                  type: string
+                  example: "1234456a79"
+      responses:
+        '201':
+          description: User signed up successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "67bd7e0d1a0fc4c27c656c33"
+                      name:
+                        type: string
+                        example: "Ali"
+                      email:
+                        type: string
+                        example: "Ali@domain.com"
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 201
+        '400':
+          description: Bad request
+
+  /api/users/auth:
+    post:
+      summary: Authenticate a user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "Ali@domain.com"
+                password:
+                  type: string
+                  example: "1234456a79"
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2EzYWE3MzBhMDY1ZjBiY2I0ZTdmNGIiLCJuYW1lIjoiQWxpIiwiZW1haWwiOiJhbGlAZG9tYWluLmNvbSIsImlhdCI6MTc0MDQ3MjA3MX0.tQT2DTspxdw6O9eoEZvz2knwrzoazjxrN5YW_1dWoks"
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 200
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+
+  /api/blogs:
+    get:
+      summary: List of all Blogs.
+      tags: [Blogs]
+      parameters:
+        - name: category
+          description: The category of the blogs to filter by (optional)
+          in: query
+          required: false  # Make it optional
+          schema:
+            type: string
+      responses:
+        200:
+          description: The list of blogs.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: "Computer"
+                        category:
+                          type: string
+                          example: "Texch"
+                        content:
+                          type: string
+                          example: "description"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2025-02-25T08:30:49.405Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2025-02-25T08:30:49.405Z"
+                        user:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: "Ali"
+                            _id:
+                              type: string
+                              example: "67a3aa730a065f0bcb4e7f4b"
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 200
+
+    post:
+      summary: Create a new blog post.
+      tags:
+        - Blogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Computer"
+                content:
+                  type: string
+                  example: "description"
+                category:
+                  type: string
+                  example: "Tech"
+      responses:
+        '201':
+          description: Blog post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 201
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 201
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+      security:
+        - bearerAuth: []
+
+  /api/blogs/{id}:
+    put:
+      summary: Update an existing blog post
+      tags:
+        - Blogs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the blog post to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Computer x"
+                content:
+                  type: string
+                  example: "description z"
+                category:
+                  type: string
+                  example: "Technooo"
+      responses:
+        '201':
+          description: Blog post updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        example: "Computer x"
+                      category:
+                        type: string
+                        example: "Technooo"
+                      content:
+                        type: string
+                        example: "description z"
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 201
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete an existing blog post
+      tags:
+        - Blogs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the blog post to delete
+      responses:
+        '201':
+          description: Blog post deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    example: {}
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 201
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+      security:
+        - bearerAuth: []

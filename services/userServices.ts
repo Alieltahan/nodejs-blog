@@ -13,7 +13,8 @@ class UserService {
 		const user = await UserModel.findOne({email});
 		if (!user)
 			return {
-				code: HttpStatusCode.NOT_FOUND
+				code: HttpStatusCode.NOT_FOUND,
+				user: undefined
 			}
 
 		return {
