@@ -8,13 +8,10 @@ const router: Router = express.Router();
 
 router.route('/')
 	.get(BlogController.getAllBlogs)
-	// @ts-ignore
 	.post(authorize, BlogController.postBlog)
 
 router.route('/:id')
-	// @ts-ignore
 	.put([authorize, validateObjectId], BlogController.updateBlog)
-	// @ts-ignore
 	.delete([authorize, validateObjectId], BlogController.deleteBlog)
 
 module.exports = router;

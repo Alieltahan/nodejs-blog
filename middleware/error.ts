@@ -7,7 +7,7 @@ const AppError = require('../utils/AppError');
 
 module.exports = function(err: { message: string; details: { message: string; }[]; }, _req: Request, res: Response){
 		if (err) {
-			Logger.error(`server side error => ${err?.details?.[0]?.message || err}`);
+			Logger.error(`server side error => ${err?.details?.[0]?.message || err.message}`);
 			res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError(err?.details?.[0]?.message || err, HttpStatusCode.INTERNAL_SERVER_ERROR));
 		}
 }
