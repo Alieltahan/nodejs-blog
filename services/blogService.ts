@@ -1,6 +1,8 @@
+import { blogPayloadType } from "../Types/request";
 import { BlogModel } from "../models/blogsModel";
 import { BlogModelType } from "../models/types";
 import { AuthenticatePayload, BlogPayload } from "../Types/payload";
+const APIFeatures = require('../utils/APIFeatures');
 import AppError from "../utils/AppError";
 import { HttpStatusCode } from "../utils/constants";
 import Logger from "./Logger";
@@ -13,16 +15,18 @@ interface BlogServiceTypes {
 	set?: (blog: BlogPayload) => Promise<void>
 	remove?: () => Promise<void>;
 	user?: AuthenticatePayload;
+	totalBlogs?: number;
 }
 
 class BlogService {
-	async getAll (): Promise<BlogServiceTypes> {
+	async getAll (req: blogPayloadType): Promise<BlogServiceTypes> {
 		try {
-			const blogs = await BlogModel.find().select('-__v');
+			const features = new APIFeatures(BlogModel.find(), req.query).paginate();
+			const blogs = await features.query;
 
 			return {
 				code: HttpStatusCode.OK,
-				blogs
+				blogs,
 			}
 		} catch(err) {
 			Logger.error(`BlogService() => getAll() error : ${err}`);

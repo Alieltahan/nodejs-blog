@@ -26,11 +26,11 @@ class BlogController {
 			return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedFilteredBlogs));
 		}
 
-		const { blogs } = await BlogService.getAll();
+		const { blogs } = await BlogService.getAll(req);
 
 		const mappedBlogs = blogsMapper(blogs);
 
-		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK,mappedBlogs));
+		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedBlogs));
 		} catch (err) {
 			Logger.error('Failed during Controller getAllBlogs', err);
 			res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError('Something Went wrong', HttpStatusCode.INTERNAL_SERVER_ERROR));

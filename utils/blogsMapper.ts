@@ -2,6 +2,7 @@ import { BlogModelType } from "../models/types";
 
 export function blogsMapper (blogs: BlogModelType[]) {
 	return blogs?.map((blog: BlogModelType) => ({
+		_id: blog._id,
 		title: blog.title,
 		category: blog.category,
 		content: blog.content,
