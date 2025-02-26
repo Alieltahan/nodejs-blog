@@ -1,4 +1,6 @@
 import express, { Express } from 'express';
+import AppError from "../utils/AppError";
+import { HttpStatusCode } from "../utils/constants";
 const swaggerUi = require('swagger-ui-express');
 const error = require('../middleware/error');
 const cors = require("cors");
@@ -14,6 +16,7 @@ module.exports = function(app: Express) {
 		.use(cors())
 		.use('/api/users', require('../routes/usersRoutes'))
 		.use('/api/blogs', require('../routes/blogsRoutes'))
+		.use('*', require('../routes/nonExistRoute'))
 		.use(error);
 
 }

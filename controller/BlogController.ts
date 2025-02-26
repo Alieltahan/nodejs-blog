@@ -26,7 +26,7 @@ class BlogController {
 			return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedFilteredBlogs));
 		}
 
-		const { blogs, totalBlogs, totalPages } = await BlogService.getAll(req);
+		const { blogs, totalBlogs, totalPages } = await BlogService.getAll({ limit: +req.query.limit, page: +req.query.page });
 
 		const mappedBlogs = blogsMapper(blogs);
 

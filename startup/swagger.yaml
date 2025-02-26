@@ -194,11 +194,11 @@ paths:
           name: limit
           schema:
             type: integer
-            default: 3
+            default: 10
           description: Number of blogs per page (optional)
       responses:
         '200':
-          description: A list of blogs (optionally with pagination).
+          description: A list of blogs (with pagination).
           content:
             application/json:
               schema:
