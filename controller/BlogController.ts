@@ -19,18 +19,19 @@ class BlogController {
 			const { blogs, code } = await BlogService.getBlogsByCategory(category);
 
 			if (code === HttpStatusCode.NOT_FOUND)
-				res.status(HttpStatusCode.NOT_FOUND).send(new AppError('Not blogs found with these search criteria', HttpStatusCode.NOT_FOUND));
+				return res.status(HttpStatusCode.OK).send(new AppError('No blogs found with these search criteria', HttpStatusCode.NOT_FOUND));
 
 			const mappedFilteredBlogs = blogsMapper(blogs);
 
 			return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedFilteredBlogs));
 		}
 
-		const { blogs } = await BlogService.getAll(req);
+		const { blogs, totalBlogs, totalPages } = await BlogService.getAll(req);
 
 		const mappedBlogs = blogsMapper(blogs);
 
-		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedBlogs));
+		return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, { blogs: mappedBlogs, totalBlogs,
+			totalPages}));
 		} catch (err) {
 			Logger.error('Failed during Controller getAllBlogs', err);
 			res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new AppError('Something Went wrong', HttpStatusCode.INTERNAL_SERVER_ERROR));

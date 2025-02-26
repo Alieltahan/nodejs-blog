@@ -1,11 +1,12 @@
-import { blogPayloadType } from "../Types/request";
 import { BlogModel } from "../models/blogsModel";
 import { BlogModelType } from "../models/types";
 import { AuthenticatePayload, BlogPayload } from "../Types/payload";
-const APIFeatures = require('../utils/APIFeatures');
+import { blogPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
 import { HttpStatusCode } from "../utils/constants";
 import Logger from "./Logger";
+
+const APIFeatures = require('../utils/APIFeatures');
 
 interface BlogServiceTypes {
 	code: HttpStatusCode,
@@ -16,18 +17,37 @@ interface BlogServiceTypes {
 	remove?: () => Promise<void>;
 	user?: AuthenticatePayload;
 	totalBlogs?: number;
+	totalPages?: number;
 }
 
 class BlogService {
 	async getAll (req: blogPayloadType): Promise<BlogServiceTypes> {
 		try {
-			const features = new APIFeatures(BlogModel.find(), req.query).paginate();
-			const blogs = await features.query;
+			const { limit } = req.query;
+			if ( limit ) {
+				const features = new APIFeatures(BlogModel, req.query).paginate();
+				const result = await features.query;
 
-			return {
-				code: HttpStatusCode.OK,
-				blogs,
+				const blogs = result[0]?.data ?? features;
+				const totalBlogs = result[0].totalCount[0]?.count || 0;
+				const totalPages = Math.ceil(totalBlogs / +req.query?.limit);
+				return {
+					code: HttpStatusCode.OK,
+					blogs,
+					totalBlogs,
+					totalPages
+				}
+			} else {
+				const blogs = await BlogModel.find();
+
+				return {
+					code: HttpStatusCode.OK,
+					blogs,
+					totalBlogs: blogs?.length,
+					totalPages: undefined,
+				}
 			}
+
 		} catch(err) {
 			Logger.error(`BlogService() => getAll() error : ${err}`);
 			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)

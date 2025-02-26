@@ -11,10 +11,23 @@ class APIFeatures {
 
 	paginate () {
 		const page = this.page * 1 || 1;
-		const limit = this.limit * 1 || 100;
+		const limit = this.limit * 1 || 0;
 		const skip = (page - 1) * limit;
 
-		this.query = this.query.skip(skip).limit(limit).select('-__v');
+			this.query = this.query.aggregate([
+				{
+					$facet: {
+						data: [
+							{$skip: skip},
+							{$limit: limit},
+							{$project: {__v: 0}}
+						],
+						totalCount: [
+							{$count: 'count'}
+						]
+					}
+				}
+			]);
 
 		return this;
 	}

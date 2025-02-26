@@ -6,13 +6,14 @@ const YAML = require('yamljs');
 const swaggerDoc = YAML.load('./startup/swagger.yaml')
 
 module.exports = function(app: Express) {
+	// if (process.env.NODE_ENV === 'development') {
+	app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+	// }
 	app
 		.use(express.json())
 		.use(cors())
 		.use('/api/users', require('../routes/usersRoutes'))
 		.use('/api/blogs', require('../routes/blogsRoutes'))
 		.use(error);
-	if (process.env.NODE_ENV === 'development') {
-		app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
-	}
+
 }
