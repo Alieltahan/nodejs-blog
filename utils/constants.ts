@@ -1,5 +1,7 @@
 export const regexPass = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@#$%^&*()_+~`|}{[\]:;?><,./]+$/;
 
+export const blogsLimitPerPage = 10;
+
 export enum HttpStatusCode {
 	CONTINUE = 100,
 	SWITCHING_PROTOCOLS = 101,

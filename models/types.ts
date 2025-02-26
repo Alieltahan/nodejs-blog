@@ -1,6 +1,7 @@
 import { AuthenticatePayload, BlogPayload } from "../Types/payload";
 
 export interface BlogModelType {
+	_id?: string;
 	title: string;
 	content: string;
 	category: string;
