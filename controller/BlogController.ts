@@ -21,7 +21,7 @@ class BlogController {
 			if (code === HttpStatusCode.NOT_FOUND)
 				return res.status(HttpStatusCode.OK).send(new AppError('No blogs found with these search criteria', HttpStatusCode.NOT_FOUND));
 
-			const mappedFilteredBlogs = blogsMapper(blogs);
+			const mappedFilteredBlogs = blogsMapper(blogs, category);
 
 			return res.status(HttpStatusCode.OK).send(successResponseMapper(HttpStatusCode.OK, mappedFilteredBlogs));
 		}

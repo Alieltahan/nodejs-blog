@@ -1,7 +1,7 @@
 import { BlogModelType } from "../models/types";
 
-export function blogsMapper (blogs: BlogModelType[]) {
-	return blogs?.map((blog: BlogModelType) => ({
+export function blogsMapper (blogs: BlogModelType[], filteredBy?: string) {
+	const mappedBlogs= blogs?.map((blog: BlogModelType) => ({
 		_id: blog._id,
 		title: blog.title,
 		category: blog.category,
@@ -13,4 +13,9 @@ export function blogsMapper (blogs: BlogModelType[]) {
 			_id: blog.user._id
 		}
 	}));
+
+	return {
+		blogs: mappedBlogs,
+		filteredBy: filteredBy
+	}
 }
