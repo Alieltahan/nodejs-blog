@@ -1,9 +1,12 @@
 import { BlogModel } from "../models/blogsModel";
 import { BlogModelType } from "../models/types";
 import { AuthenticatePayload, BlogPayload } from "../Types/payload";
+import { blogPayloadType } from "../Types/request";
 import AppError from "../utils/AppError";
-import { HttpStatusCode } from "../utils/constants";
+import { blogsLimitPerPage, HttpStatusCode } from "../utils/constants";
 import Logger from "./Logger";
+
+const APIFeatures = require('../utils/APIFeatures');
 
 interface BlogServiceTypes {
 	code: HttpStatusCode,
@@ -13,17 +16,31 @@ interface BlogServiceTypes {
 	set?: (blog: BlogPayload) => Promise<void>
 	remove?: () => Promise<void>;
 	user?: AuthenticatePayload;
+	totalBlogs?: number;
+	totalPages?: number;
+}
+
+interface queryStringData {
+	limit: number;
+	page?: number;
 }
 
 class BlogService {
-	async getAll (): Promise<BlogServiceTypes> {
+	async getAll (queryStringData: queryStringData): Promise<BlogServiceTypes> {
 		try {
-			const blogs = await BlogModel.find().select('-__v');
+				const features = new APIFeatures(BlogModel, queryStringData).paginate();
+				const result = await features.query;
 
-			return {
-				code: HttpStatusCode.OK,
-				blogs
-			}
+				const blogs = result[0]?.data ?? features;
+				const totalBlogs = result[0].totalCount[0]?.count || 0;
+				const totalPages = Math.ceil(totalBlogs / (queryStringData?.limit || blogsLimitPerPage));
+
+				return {
+					code: HttpStatusCode.OK,
+					blogs,
+					totalBlogs,
+					totalPages
+				}
 		} catch(err) {
 			Logger.error(`BlogService() => getAll() error : ${err}`);
 			new AppError('Internal Server error', HttpStatusCode.INTERNAL_SERVER_ERROR)

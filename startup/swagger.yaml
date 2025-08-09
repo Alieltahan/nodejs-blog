@@ -184,51 +184,79 @@ paths:
           required: false  # Make it optional
           schema:
             type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number (optional)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of blogs per page (optional)
       responses:
-        200:
-          description: The list of blogs.
+        '200':
+          description: A list of blogs (with pagination).
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        title:
-                          type: string
-                          example: "Computer"
-                        category:
-                          type: string
-                          example: "Texch"
-                        content:
-                          type: string
-                          example: "description"
-                        createdAt:
-                          type: string
-                          format: date-time
-                          example: "2025-02-25T08:30:49.405Z"
-                        updatedAt:
-                          type: string
-                          format: date-time
-                          example: "2025-02-25T08:30:49.405Z"
-                        user:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                              example: "Ali"
-                            _id:
-                              type: string
-                              example: "67a3aa730a065f0bcb4e7f4b"
                   status:
                     type: string
-                    example: "success"
+                    example: success
                   statusCode:
                     type: integer
                     example: 200
+                  data:
+                    type: object
+                    properties:
+                      blogs:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 67bdd0c761df8da037784157
+                            title:
+                              type: string
+                              example: Computer
+                            category:
+                              type: string
+                              example: Texch
+                            content:
+                              type: string
+                              example: description
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: 2025-02-25T14:16:39.474Z
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              example: 2025-02-25T14:16:39.474Z
+                            user:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: Ali
+                                _id:
+                                  type: string
+                                  example: 67a3aa730a065f0bcb4e7f4b
+                      totalBlogs:
+                        type: integer
+                        example: 11
+                      totalPages:
+                        type: integer
+                        example: 3
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
 
     post:
       summary: Create a new blog post.
